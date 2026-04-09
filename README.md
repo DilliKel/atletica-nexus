@@ -95,6 +95,7 @@ Configuracoes de head (idioma, descricao, favicon), PostCSS e CSS global ficam e
 
 - Instagram: https://instagram.com/atleticanexus
 - WhatsApp: configurado em `utils/siteContent.js`
+- Twitter: @atleticanexus
 
 ## Licenca
 
