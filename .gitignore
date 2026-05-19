@@ -6,3 +6,16 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# variáveis de ambiente — nunca commitar
+.env
+.env.local
+
+# service account Firebase — nunca commitar
+scripts/service-account.json
+*.json.key
+firebase-debug.log
+firestore-debug.log
+storage-debug.log
+
+docs/
