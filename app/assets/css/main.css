@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nx-green: #6EC832;
+  --color-nx-green-dark: #4A9620;
+  --color-nx-dark: #0d0d0d;
+  --color-nx-dark-2: #161616;
+  --color-nx-dark-3: #1f1f1f;
+  --color-nx-dark-4: #2a2a2a;
+  --color-nx-light: #f5f5f5;
+  --color-nx-muted: #888888;
+
+  --font-display: 'Barlow Condensed', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+:root {
+  --nx-green:      #6EC832;
+  --nx-green-dark: #4A9620;
+  --nx-green-glow: rgba(110, 200, 50, 0.18);
+  --nx-dark:       #0d0d0d;
+  --nx-dark-2:     #161616;
+  --nx-dark-3:     #1f1f1f;
+  --nx-dark-4:     #2a2a2a;
+  --nx-light:      #f5f5f5;
+  --nx-muted:      #888888;
+  --font-display:  'Barlow Condensed', sans-serif;
+  --font-body:     'Inter', sans-serif;
+}
+
+.fade-enter-active,
+.fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from,
+.fade-leave-to      { opacity: 0; }

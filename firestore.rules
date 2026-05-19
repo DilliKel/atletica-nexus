@@ -1,0 +1,111 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helpers
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function cargo() {
+      return request.auth.token.cargo;
+    }
+
+    function isPresidente() {
+      return cargo() == 'presidente';
+    }
+
+    function isViceOrAbove() {
+      return cargo() in ['presidente', 'vice-presidente'];
+    }
+
+    function isDiretorOrAbove() {
+      return cargo() in [
+        'presidente', 'vice-presidente', 'secretario',
+        'diretor-esportes', 'diretor-patrimonio', 'diretor-marketing'
+      ];
+    }
+
+    function canWriteAtletas() {
+      return cargo() in ['presidente', 'vice-presidente', 'secretario'];
+    }
+
+    function canWriteEstoque() {
+      return cargo() in ['presidente', 'vice-presidente', 'diretor-patrimonio'];
+    }
+
+    function canWriteFotos() {
+      return cargo() in ['presidente', 'vice-presidente', 'diretor-esportes', 'diretor-marketing', 'designer'];
+    }
+
+    function canWriteConquistas() {
+      return cargo() in ['presidente', 'vice-presidente', 'diretor-esportes'];
+    }
+
+    function canWriteModalidades() {
+      return cargo() in ['presidente', 'vice-presidente', 'diretor-esportes'];
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: atletas
+    // Leitura pública; escrita exige cargo autorizado
+    // ────────────────────────────────────────────────────
+    match /atletas/{atletaId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && canWriteAtletas();
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: produtos
+    // ────────────────────────────────────────────────────
+    match /produtos/{produtoId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && canWriteEstoque();
+
+      match /movimentacoes/{movId} {
+        allow read: if isLoggedIn() && canWriteEstoque();
+        allow write: if isLoggedIn() && canWriteEstoque();
+      }
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: eventos + fotos
+    // ────────────────────────────────────────────────────
+    match /eventos/{eventoId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && canWriteFotos();
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: conquistas
+    // ────────────────────────────────────────────────────
+    match /conquistas/{conquistaId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && canWriteConquistas();
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: gestoes
+    // ────────────────────────────────────────────────────
+    match /gestoes/{gestaoId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && isPresidente();
+    }
+
+    // ────────────────────────────────────────────────────
+    // Coleção: modalidades
+    // ────────────────────────────────────────────────────
+    match /modalidades/{modalidadeId} {
+      allow read: if true;
+      allow write: if isLoggedIn() && canWriteModalidades();
+    }
+
+    // ────────────────────────────────────────────────────
+    // Nega tudo que não esteja explicitamente permitido
+    // ────────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

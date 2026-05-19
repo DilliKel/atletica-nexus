@@ -1,0 +1,45 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Helpers
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function cargo() {
+      return request.auth.token.cargo;
+    }
+
+    function canUpload() {
+      return cargo() in [
+        'presidente', 'vice-presidente',
+        'diretor-esportes', 'diretor-marketing', 'designer'
+      ];
+    }
+
+    // Fotos de atletas — leitura pública, escrita restrita
+    match /atletas/{atletaId}/{file} {
+      allow read:  if true;
+      allow write: if isLoggedIn() && cargo() in ['presidente', 'vice-presidente', 'secretario'];
+    }
+
+    // Fotos de eventos/galeria — leitura pública, escrita restrita
+    match /eventos/{eventoId}/{file} {
+      allow read:  if true;
+      allow write: if isLoggedIn() && canUpload();
+    }
+
+    // Fotos de produtos — leitura pública, escrita restrita
+    match /produtos/{produtoId}/{file} {
+      allow read:  if true;
+      allow write: if isLoggedIn() && cargo() in ['presidente', 'vice-presidente', 'diretor-patrimonio'];
+    }
+
+    // Tudo mais: negado
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
